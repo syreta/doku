@@ -1,0 +1,202 @@
+openapi: 3.0.0
+info:
+  title: Premedia API
+  description: API for interacting with the Premedia service for image uploading, cropping, and deletion.
+  version: 1.0.0
+paths:
+  /UploadImage/{imageId}:
+    post:
+      summary: Upload a high-resolution image
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+        'default':
+          description: Error on API call /UploadImage/
+  /UploadAdditionalImage/{imageId}:
+    post:
+      summary: Upload an additional image (e.g., logos, claims)
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Image uploaded successfully
+        'default':
+          description: Error on API call /UploadAdditionalImage/
+  /GetAllUploadedImages:
+    get:
+      summary: Retrieve all uploaded images (main and additional)
+      responses:
+        '200':
+          description: Uploaded images retrieved successfully
+        'default':
+          description: Error on API call /GetAllUploadedImages/
+  /CropLowRes:
+    post:
+      summary: Crop a low-resolution image and return it as base64
+      parameters:
+        - name: imageId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: variantId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: offsetTop
+          in: query
+          schema:
+            type: number
+            format: float
+            default: 0
+        - name: offsetRight
+          in: query
+          schema:
+            type: number
+            format: float
+            default: 0
+        - name: offsetBottom
+          in: query
+          schema:
+            type: number
+            format: float
+            default: 0
+        - name: offsetLeft
+          in: query
+          schema:
+            type: number
+            format: float
+            default: 0
+        - name: generatePreview
+          in: query
+          schema:
+            type: boolean
+            default: true
+        - name: finalFormatWidth
+          in: query
+          schema:
+            type: number
+            format: float
+            default: 0
+        - name: finalFormatHeight
+          in: query
+          schema:
+            type: number
+            format: float
+            default: 0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                additionalImageData:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      additionalImageID:
+                        type: string
+                        format: uuid
+                      offsetLeft:
+                        type: number
+                        format: float
+                      offsetTop:
+                        type: number
+                        format: float
+                      offsetBottom:
+                        type: number
+                        format: float
+                      percentageOfAdditionalImageInRelationToVariantWidth:
+                        type: number
+                        format: float
+                      blendModeMultiply:
+                        type: boolean
+      responses:
+        '200':
+          description: Image cropped successfully
+        'default':
+          description: Error on API call /CropLowRes/
+  /CropHighRes:
+    post:
+      summary: Start cropping and sending high-resolution files
+      parameters:
+        - name: imageId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Crop request sent successfully
+        'default':
+          description: Error on API call /CropHighRes/
+  /DeleteImage/{imageId}:
+    delete:
+      summary: Delete an image (main and additional)
+      parameters:
+        - name: imageId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Image deleted successfully
+        '204':
+          description: Image already deleted
+        'default':
+          description: Error on API call /DeleteImage/
+  /DeleteVariant/{variantId}:
+    delete:
+      summary: Delete a variant
+      parameters:
+        - name: variantId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Variant deleted successfully
+        'default':
+          description: Error on API call /DeleteVariant/
